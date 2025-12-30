@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老闆後台 | 訂單管理系統</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body { background-color: #f8f9fa; font-family: "Microsoft JhengHei", sans-serif; }
+        .container { margin-top: 30px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0,0,0,0.1); max-width: 95%; }
+        h1 { color: #333; border-bottom: 2px solid #d4af37; padding-bottom: 10px; margin-bottom: 30px; }
+        
+        /* 表格樣式優化 */
+        .table th { white-space: nowrap; }
+        .item-row { margin-bottom: 4px; font-size: 0.95rem; }
+        .qty-badge { color: #d4af37; font-weight: bold; margin-left: 5px; }
+        
+        /* 狀態標籤顏色 */
+        .badge-new { background-color: #ffc107; color: #000; } /* 新訂單 */
+        .badge-paid { background-color: #198754; color: #fff; } /* 已付款 */
+        .badge-shipped { background-color: #0d6efd; color: #fff; } /* 已出貨 */
+        .badge-cancelled { background-color: #6c757d; color: #fff; } /* 已取消 */
+
+        /* 顧客資料區塊 */
+        .customer-info { font-size: 0.9rem; line-height: 1.4; color: #555; }
+        .customer-name { font-weight: bold; font-size: 1rem; color: #333; }
+        .addr-text { display: block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: help;}
+
+        /* 付款方式 */
+        .pay-method { font-weight: bold; display: block; margin-bottom: 5px; }
+        .pay-transfer { color: #d63384; }
+        .pay-cash { color: #0d6efd; }
+        .total-price { font-size: 1.1rem; color: #c0392b; font-weight: bold; }
+
+        .loading { text-align: center; padding: 50px; font-size: 1.2rem; color: #666; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>📦 訂單管理後台</h1>
+            <button class="btn btn-outline-primary" onclick="window.location.reload()">
+                <i class="fas fa-sync-alt"></i> 重新整理
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th width="10%">訂單資訊</th>
+                        <th width="20%">顧客資料</th>
+                        <th width="30%">購買商品</th>
+                        <th width="15%">金額與付款</th>
+                        <th width="10%">目前狀態</th>
+                        <th width="15%">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="orderList">
+                    <tr><td colspan="6" class="loading">正在讀取資料庫...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="module">
+        // 1. 引入 Firebase (新增 doc, updateDoc)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, orderBy, query, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 2. Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBvIuEg3C4Fc_z28qZd88WUrSPobVRFm2c",
+            authDomain: "saeko-stone-shop.firebaseapp.com",
+            projectId: "saeko-stone-shop",
+            storageBucket: "saeko-stone-shop.firebasestorage.app",
+            messagingSenderId: "1003229346534",
+            appId: "1:1003229346534:web:03840c5aded73e1d71d927",
+            measurementId: "G-9STDRJFN8H"
+        };
+
+        // 3. 初始化
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 4. 讀取訂單的功能 (含自動取消過期訂單邏輯)
+        async function fetchOrders() {
+            const orderList = document.getElementById('orderList');
+            const now = new Date(); // 取得現在時間
+            
+            try {
+                const q = query(collection(db, "orders"), orderBy("orderTime", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    orderList.innerHTML = '<tr><td colspan="6" class="text-center p-5">目前還沒有任何訂單喔！</td></tr>';
+                    return;
+                }
+
+                let html = '';
+
+                // 使用 for...of 迴圈來支援 await 操作
+                for (const docSnapshot of querySnapshot.docs) {
+                    let data = docSnapshot.data();
+                    const orderId = docSnapshot.id;
+                    
+                    // --- ★★★ 自動取消邏輯開始 ★★★ ---
+                    let dateStr = "時間未定";
+                    if (data.orderTime) {
+                        const orderDate = data.orderTime.toDate();
+                        dateStr = orderDate.toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+
+                        // 計算時間差 (毫秒)
+                        const diffTime = now - orderDate;
+                        const diffDays = diffTime / (1000 * 60 * 60 * 24); // 換算成天數
+
+                        // 判斷：如果是「新訂單」且「超過 7 天」
+                        if (data.status === 'new' && diffDays > 7) {
+                            console.log(`訂單 ${orderId} 已過期，自動取消`);
+                            // 1. 更新資料庫
+                            await updateDoc(doc(db, "orders", orderId), { status: 'cancelled' });
+                            // 2. 更新目前顯示的資料狀態，讓畫面不用重整就顯示取消
+                            data.status = 'cancelled'; 
+                        }
+                    }
+                    // --- ★★★ 自動取消邏輯結束 ★★★ ---
+
+                    // 2. 處理顧客資料
+                    const contact = data.contactInfo || { name: '舊訂單無資料', phone: '', address: '' };
+                    
+                    // 3. 處理商品內容
+                    let itemsHtml = '';
+                    if (data.items && Array.isArray(data.items)) {
+                        data.items.forEach(item => {
+                            let quantity = item.qty ? item.qty : 1;
+                            itemsHtml += `<div class="item-row">• ${item.title} <span class="qty-badge">x${quantity}</span></div>`;
+                        });
+                    }
+
+                    // 4. 處理付款方式顯示
+                    let payMethodHtml = '';
+                    if (data.paymentMethod === 'transfer') {
+                        payMethodHtml = '<span class="pay-method pay-transfer"><i class="fas fa-university"></i> 銀行轉帳</span>';
+                    } else {
+                        payMethodHtml = '<span class="pay-method pay-cash"><i class="fas fa-store"></i> 店內付現</span>';
+                    }
+
+                    // 5. 處理狀態與按鈕邏輯
+                    let statusBadge = '';
+                    let actionButtons = '';
+
+                    if (data.status === 'new') {
+                        statusBadge = '<span class="badge badge-new">待處理</span>';
+                        actionButtons = `<button class="btn btn-success btn-sm w-100 mb-1" onclick="window.updateStatus('${orderId}', 'paid')">確認已收款</button>`;
+                    } else if (data.status === 'paid') {
+                        statusBadge = '<span class="badge badge-paid">已收款</span>';
+                        actionButtons = `<button class="btn btn-primary btn-sm w-100 mb-1" onclick="window.updateStatus('${orderId}', 'shipped')">通知已出貨/取貨</button>`;
+                    } else if (data.status === 'shipped') {
+                        statusBadge = '<span class="badge badge-shipped">已出貨</span>';
+                        actionButtons = '<span class="text-success"><i class="fas fa-check"></i> 完成</span>';
+                    } else if (data.status === 'cancelled') {
+                        statusBadge = '<span class="badge badge-cancelled">已取消 (過期/手動)</span>';
+                        actionButtons = '<span class="text-muted">無操作</span>';
+                    }
+
+                    if (data.status !== 'cancelled' && data.status !== 'shipped') {
+                        actionButtons += `<button class="btn btn-outline-danger btn-sm w-100" onclick="window.updateStatus('${orderId}', 'cancelled')">取消訂單</button>`;
+                    }
+
+                    html += `
+                        <tr>
+                            <td>
+                                <small class="text-muted d-block">${dateStr}</small>
+                                <small class="text-primary d-block" title="${orderId}">#${orderId.slice(0,6)}</small>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <div class="customer-name">${contact.name}</div>
+                                    <div>${contact.phone}</div>
+                                    <div class="addr-text" title="${contact.address}">${contact.address}</div>
+                                </div>
+                            </td>
+                            <td>${itemsHtml}</td>
+                            <td>
+                                ${payMethodHtml}
+                                <div class="total-price">NT$ ${data.totalPrice.toLocaleString()}</div>
+                            </td>
+                            <td class="text-center">${statusBadge}</td>
+                            <td>${actionButtons}</td>
+                        </tr>
+                    `;
+                }
+
+                orderList.innerHTML = html;
+
+            } catch (error) {
+                console.error("讀取失敗:", error);
+                orderList.innerHTML = `<tr><td colspan="6" class="text-center text-danger p-5">讀取失敗，請檢查 Console 錯誤訊息。<br>${error.message}</td></tr>`;
+            }
+        }
+
+        // 5. 更新訂單狀態的功能 (綁定到 window 讓 HTML 呼叫)
+        window.updateStatus = async (orderId, newStatus) => {
+            let confirmText = '';
+            let confirmBtnColor = '#3085d6';
+
+            if (newStatus === 'paid') confirmText = '確認已經收到款項了嗎？';
+            if (newStatus === 'shipped') confirmText = '確認通知客人取貨/出貨嗎？';
+            if (newStatus === 'cancelled') {
+                confirmText = '確定要取消這筆訂單嗎？(無法復原)';
+                confirmBtnColor = '#d33';
+            }
+
+            const result = await Swal.fire({
+                title: '確認操作',
+                text: confirmText,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: confirmBtnColor,
+                cancelButtonText: '再想想',
+                confirmButtonText: '是的，執行'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    // 寫入資料庫
+                    const orderRef = doc(db, "orders", orderId);
+                    await updateDoc(orderRef, { status: newStatus });
+                    
+                    Swal.fire('成功', '訂單狀態已更新', 'success');
+                    fetchOrders(); // 重新整理表格
+                } catch (e) {
+                    console.error(e);
+                    Swal.fire('錯誤', '更新失敗，請檢查網路', 'error');
+                }
+            }
+        }
+
+        // 啟動讀取
+        fetchOrders();
+    </script>
+</body>
+</html>

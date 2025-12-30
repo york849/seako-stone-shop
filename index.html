@@ -1,1039 +1,537 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>石藝 | 匠心雕刻</title>
-
     
-
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Noto+Serif+TC:wght@300;500;700&family=Noto+Sans+TC:wght@300;400&display=swap" rel="stylesheet">
 
-
-
     <style>
-
         /* --- 1. 全域與變數 (明亮色系) --- */
-
         :root {
-
             --bg-color: #f9f9f9;
-
             --text-main: #333333;
-
             --text-sub: #666666;
-
             --accent: #b8962e;
-
             --card-bg: #ffffff;
-
             --font-serif: 'Noto Serif TC', serif; 
-
             --font-sans: 'Noto Sans TC', sans-serif; 
-
             --font-eng: 'Cinzel', serif; 
-
         }
-
-
 
         html { scroll-behavior: smooth; }
-
         body { margin: 0; font-family: var(--font-sans); color: var(--text-main); background-color: var(--bg-color); overflow-x: hidden; }
 
-
-
         /* --- 2. 導覽列 --- */
-
-        header { background-color: rgba(255, 255, 255, 0.95); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.05); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-
-        .logo { font-family: var(--font-eng); font-size: 24px; letter-spacing: 2px; color: var(--text-main); font-weight: bold; }
+        header { 
+            background-color: rgba(255, 255, 255, 0.95); 
+            padding: 5px 30px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            backdrop-filter: blur(10px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            min-height: 100px;
+        }
+        
+        .logo { margin: 0; padding: 0; line-height: 0; display: flex; align-items: center; }
+        .logo a { display: block; text-decoration: none; }
+        .logo img { height: 90px; width: auto; display: block; object-fit: contain; }
 
         .nav-links { display: none; }
-
         @media (min-width: 768px) {
-
-            .nav-links { display: flex; gap: 50px; }
-
-            .nav-links a { text-decoration: none; color: var(--text-sub); font-size: 15px; letter-spacing: 1px; transition: 0.3s; font-family: var(--font-serif); font-weight: 500; }
-
+            .nav-links { display: flex; gap: 40px; }
+            .nav-links a { text-decoration: none; color: var(--text-sub); font-size: 18px; letter-spacing: 1.5px; transition: 0.3s; font-family: var(--font-serif); font-weight: 600; }
             .nav-links a:hover { color: var(--accent); }
-
         }
-
         
-
-        .actions { display: flex; align-items: center; gap: 20px; }
-
+        .actions { display: flex; align-items: center; gap: 25px; }
         .icon-btn-wrapper { position: relative; cursor: pointer; color: var(--text-main); transition: 0.3s; }
-
         .icon-btn-wrapper:hover { color: var(--accent); }
-
-        .actions i { font-size: 1.2rem; }
-
-        .user-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); cursor: pointer; display: none; }
-
-        .login-btn { font-size: 0.9rem; cursor: pointer; color: var(--text-main); border: 1px solid var(--text-main); padding: 5px 15px; border-radius: 20px; transition: 0.3s; }
-
+        .actions i { font-size: 1.5rem; }
+        
+        .user-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent); cursor: pointer; display: none; }
+        .login-btn { font-size: 1rem; cursor: pointer; color: var(--text-main); border: 1px solid var(--text-main); padding: 8px 20px; border-radius: 20px; transition: 0.3s; font-weight: 500; }
         .login-btn:hover { background: var(--text-main); color: #fff; }
-
-        .cart-count { position: absolute; top: -8px; right: -8px; background-color: #c0392b; color: #fff; font-size: 10px; width: 18px; height: 18px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
-
-
+        .cart-count { position: absolute; top: -5px; right: -8px; background-color: #c0392b; color: #fff; font-size: 11px; width: 20px; height: 20px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 1px solid #fff; }
 
         /* --- 3. Hero --- */
-
         .hero { height: 100vh; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center; background-color: #f0f0f0; }
-
         .hero-bg-text { position: absolute; font-family: var(--font-eng); font-size: 15vw; color: rgba(0, 0, 0, 0.05); top: 50%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; pointer-events: none; z-index: 1; transition: transform 0.1s ease-out; }
-
         .hero-img-container { position: relative; width: 85%; max-width: 800px; aspect-ratio: 3 / 2; z-index: 2; transition: transform 0.1s ease-out; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-
         .hero-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.5s ease-in-out; }
-
         .hero-img.active { opacity: 1; }
 
-
-
         /* --- 4. Intro --- */
-
         .intro-section { position: relative; padding: 120px 20px; text-align: center; background-image: url('https://images.unsplash.com/photo-1445510445177-50a16c50b3e3?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center; background-attachment: fixed; }
-
         .intro-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.85); z-index: 1; }
-
         .intro-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
-
         .section-title { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 40px; color: #222; letter-spacing: 5px; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 10px; }
-
         .intro-text { line-height: 2.2; color: #555; font-size: 1.1rem; font-family: var(--font-serif); font-weight: 500; }
 
-
-
         /* --- 5. Products --- */
-
         .products-section { padding: 80px 15px; max-width: 1400px; margin: 0 auto; }
-
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px 25px; }
-
         @media (min-width: 900px) { .product-grid { grid-template-columns: repeat(4, 1fr); gap: 60px 30px; } }
-
         .product-card { background: var(--card-bg); cursor: pointer; transition: 0.3s; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-
         .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); opacity: 1; }
-
         .product-img-wrapper { width: 100%; aspect-ratio: 3 / 2; overflow: hidden; margin-bottom: 0; background-color: #eee; }
-
         .product-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
-
         .product-card:hover .product-img { transform: scale(1.05); }
-
         .product-info { text-align: left; padding: 15px; }
-
         .product-title { font-size: 1rem; color: #222; margin-bottom: 8px; letter-spacing: 1px; font-weight: bold; }
-
         .product-price { font-family: var(--font-serif); color: var(--accent); font-size: 1.1rem; font-weight: 700; }
 
-
-
         /* --- 6. Modal 通用 --- */
-
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; color: #333; z-index: 2000; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1); overflow-y: auto; display: flex; flex-direction: column; }
-
         .overlay.active { transform: translateY(0); }
-
         .close-btn { position: absolute; top: 20px; right: 20px; font-size: 30px; cursor: pointer; color: #333; z-index: 2001; transition: 0.3s; }
-
         .close-btn:hover { color: var(--accent); transform: rotate(90deg); }
-
         
-
         .detail-content { display: flex; flex-direction: column; padding: 80px 20px; max-width: 900px; margin: 0 auto; gap: 40px; }
-
-        
-
         .detail-info-box { width: 100%; text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-
-
-
         .detail-img-box { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
-
         .detail-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
-
         .detail-img:hover { opacity: 0.95; transform: scale(1.02); }
-
-
-
         .detail-title { font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 10px; color: #111; }
-
         .detail-price { font-family: var(--font-serif); font-size: 1.8rem; color: var(--accent); margin-bottom: 20px; font-weight: bold; }
-
         .detail-text-block { font-size: 1rem; color: #555; line-height: 1.8; margin-bottom: 10px; }
-
         .detail-spec { font-family: var(--font-sans); color: #888; font-size: 0.9rem; margin-bottom: 20px; }
 
-
-
         .qty-selector { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 25px; margin-bottom: 25px; }
-
         .qty-label { font-weight: bold; color: #555; }
-
         .qty-box { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
-
         .qty-btn { background: #f0f0f0; border: none; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; transition: 0.2s; }
-
         .qty-btn:hover { background: #ddd; }
-
         .qty-display { width: 50px; text-align: center; font-weight: bold; border-left: 1px solid #ddd; border-right: 1px solid #ddd; line-height: 40px; }
-
         
-
         .btn-buy { background-color: #222; color: #fff; border: none; padding: 15px 60px; font-size: 1.1rem; cursor: pointer; margin-top: 10px; transition: 0.3s; border-radius: 50px; }
-
         .btn-buy:hover { background-color: var(--accent); color: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
-
-
-        /* Cart/Order List (新增：購物車數量調整樣式) */
-
         .cart-list-container { padding: 20px; max-width: 600px; margin: 60px auto; width: 100%; }
-
         .cart-item { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-
         .cart-item img { width: 80px; height: 60px; object-fit: cover; margin-right: 20px; border-radius: 4px; }
-
         .cart-item-info { flex-grow: 1; }
-
         .cart-item-title { font-weight: bold; margin-bottom: 5px; color: #333; }
-
         .cart-total { text-align: right; font-size: 1.5rem; font-weight: bold; margin-top: 30px; border-top: 2px solid #333; padding-top: 20px; color: #000; }
-
-        
-
-        /* ★★★ 購物車內的小型數量調整器 ★★★ */
-
         .cart-qty-control { display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; margin-top: 5px; width: fit-content; }
-
         .cart-qty-btn { background: #fff; border: none; width: 25px; height: 25px; cursor: pointer; font-size: 1rem; color: #555; }
-
         .cart-qty-btn:hover { background: #f0f0f0; }
-
         .cart-qty-num { width: 30px; text-align: center; font-size: 0.9rem; border-left: 1px solid #eee; border-right: 1px solid #eee; }
 
-
+        /* 結帳表單樣式 */
+        .checkout-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; text-align: left; }
+        .form-group label { font-weight: bold; display: block; margin-bottom: 5px; color: #333; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .payment-options { display: flex; gap: 20px; margin-top: 5px; }
+        .radio-label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .bank-info-box { background: #fdf6e3; padding: 15px; border-radius: 5px; border: 1px solid #eee; font-size: 0.95rem; line-height: 1.6; display: none; margin-top: 10px; color: #8a6d3b; }
+        .required { color: red; margin-left: 3px; }
 
         .swal2-container { z-index: 10000 !important; }
-
         footer { background-color: #f0f0f0; padding: 40px; text-align: center; color: #888; font-size: 0.8rem; border-top: 1px solid #ddd; }
-
     </style>
-
 </head>
-
 <body>
 
-
-
     <header>
-
-        <div class="logo">挑石撿玉</div>
-
+        <h1 class="logo">
+            <a href="#">
+                <img src="logo.png" alt="挑石撿玉 - 首頁">
+            </a>
+        </h1>
         <nav class="nav-links">
-
             <a href="#brand-intro">品牌簡介</a>
-
             <a href="#product-list">系列商品</a>
-
         </nav>
-
         <div class="actions">
-
             <div id="loginArea"><span class="login-btn" onclick="handleLogin()">會員登入</span></div>
-
             <img id="userAvatar" class="user-avatar" onclick="handleLogout()" title="點擊登出">
-
             <div class="icon-btn-wrapper" onclick="openOrderModal()" title="我的訂單"><i class="fas fa-clipboard-list"></i></div>
-
             <div class="icon-btn-wrapper" onclick="openCartModal()" title="購物車"><i class="fas fa-shopping-bag"></i><span class="cart-count" id="cartCount">0</span></div>
-
         </div>
-
     </header>
 
-
-
     <div class="hero" id="heroSection">
-
-        <div class="hero-bg-text" id="bgText">SCULPTURE</div>
-
+        <div class="hero-bg-text" id="bgText">STONE</div>
         <div class="hero-img-container" id="imgContainer">
-
             <img src="https://i.postimg.cc/VNXLcRTM/R80031.jpg" class="hero-img active">
-
             <img src="https://i.postimg.cc/50qBj8Hy/R80175.jpg" class="hero-img">
-
             <img src="https://i.postimg.cc/TPnmHnJQ/R80204.jpg" class="hero-img">
-
         </div>
-
     </div>
-
-
 
     <div class="intro-section" id="brand-intro">
-
         <div class="intro-overlay"></div>
-
         <div class="intro-content" data-aos="fade-up">
-
             <h2 class="section-title">品牌故事</h2>
-
             <p class="intro-text">時間的長河中，石頭是沈默的見證者。<br>我們採集大自然的饋贈，<br>以手工的溫度，雕琢出獨一無二的靈魂。</p>
-
         </div>
-
     </div>
-
-
 
     <div class="products-section" id="product-list">
-
         <h2 class="section-title" style="text-align: center; display: block; color: var(--text-main);">系列產品</h2>
-
         <div class="product-grid" id="grid-container"></div>
-
     </div>
-
-
 
     <div class="overlay" id="productDetail">
-
         <div class="close-btn" onclick="closeDetail()">&times;</div>
-
         <div class="detail-content">
-
-            
-
             <div class="detail-info-box">
-
                 <h2 id="detailTitle" class="detail-title">商品名稱</h2>
-
                 <div id="detailPrice" class="detail-price">$0</div>
-
                 <div class="detail-text-block" id="detailDesc"></div>
-
                 <div class="detail-spec" id="detailSize"></div>
-
-
-
                 <div class="qty-selector">
-
                     <div class="qty-label">數量：</div>
-
                     <div class="qty-box">
-
                         <button class="qty-btn" onclick="adjustQty(-1)">-</button>
-
                         <div class="qty-display" id="qtyDisplay">1</div>
-
                         <button class="qty-btn" onclick="adjustQty(1)">+</button>
-
                     </div>
-
                 </div>
-
-
-
                 <button class="btn-buy" onclick="addToCart()">加入購物車</button>
-
             </div>
-
-
-
             <div class="detail-img-box" id="detailImgContainer"></div>
-
-
-
         </div>
-
     </div>
-
-
 
     <div class="overlay" id="cartModal">
-
         <div class="close-btn" onclick="closeCartModal()">&times;</div>
-
         <div class="cart-list-container">
-
             <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 30px; text-align: center;">您的購物車</h2>
-
             <div id="cartItemsWrapper"><p style="text-align: center; color: #888;">購物車目前是空的</p></div>
-
             <div class="cart-total">總金額: <span id="cartTotalPrice">NT$ 0</span></div>
-
-            <button class="btn-buy" style="margin-top: 30px;" onclick="checkout()">確認結帳送出</button>
-
+            <button class="btn-buy" style="margin-top: 30px;" onclick="openCheckoutForm()">前往結帳</button>
         </div>
-
     </div>
 
+    <div class="overlay" id="checkoutFormModal">
+        <div class="close-btn" onclick="closeCheckoutForm()">&times;</div>
+        <div class="cart-list-container">
+            <h2 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 20px; text-align: center;">填寫訂單資料</h2>
+            
+            <div class="checkout-form">
+                <div class="form-group">
+                    <label>收件人姓名 <span class="required">*</span></label>
+                    <input type="text" id="orderName" placeholder="請輸入姓名">
+                </div>
+                <div class="form-group">
+                    <label>聯絡電話 <span class="required">*</span></label>
+                    <input type="tel" id="orderPhone" placeholder="請輸入手機號碼">
+                </div>
+                <div class="form-group">
+                    <label>收件地址 (如自取請填「自取」) <span class="required">*</span></label>
+                    <input type="text" id="orderAddress" placeholder="請輸入地址">
+                </div>
+                
+                <div class="form-group">
+                    <label>付款方式 <span class="required">*</span></label>
+                    <div class="payment-options">
+                        <label class="radio-label">
+                            <input type="radio" name="payMethod" value="cash" checked onchange="toggleBankInfo()"> 店內付現/取貨付款
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="payMethod" value="transfer" onchange="toggleBankInfo()"> 銀行轉帳
+                        </label>
+                    </div>
+                    
+                    <div id="bankInfo" class="bank-info-box">
+                        <b>【匯款資訊】</b><br>
+                        銀行代碼：822 (中國信託)<br>
+                        銀行帳號：107534765853<br>
+                        戶名：石藝工作室<br>
+                        <span style="font-size:0.8rem; color:#666;">*請於匯款後保留收據，我們將於對帳後出貨。</span>
+                    </div>
+                </div>
+            </div>
 
+            <button class="btn-buy" style="margin-top: 30px;" onclick="submitOrder()">確認送出訂單</button>
+        </div>
+    </div>
 
     <div class="overlay" id="orderModal">
-
         <div class="close-btn" onclick="closeOrderModal()">&times;</div>
-
         <div class="cart-list-container">
-
             <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 30px; text-align: center;">訂單查詢</h2>
-
             <div id="userInfoDisplay" style="text-align:center; margin-bottom:20px; color:#d4af37;"></div>
-
             <div id="myOrderList"></div>
-
         </div>
-
     </div>
-
-
 
     <footer><p>&copy; 2025 STONE ART STUDIO.</p></footer>
 
-
-
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
     <script type="module">
-
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
         import { getFirestore, collection, addDoc, serverTimestamp, doc, updateDoc, getDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-
-
-        // 2. Firebase Config
-
+        // Firebase Config
         const firebaseConfig = {
-
             apiKey: "AIzaSyBvIuEg3C4Fc_z28qZd88WUrSPobVRFm2c",
-
             authDomain: "saeko-stone-shop.firebaseapp.com",
-
             projectId: "saeko-stone-shop",
-
             storageBucket: "saeko-stone-shop.firebasestorage.app",
-
             messagingSenderId: "1003229346534",
-
             appId: "1:1003229346534:web:03840c5aded73e1d71d927",
-
             measurementId: "G-9STDRJFN8H"
-
         };
 
-
-
         const app = initializeApp(firebaseConfig);
-
         const db = getFirestore(app);
-
         const auth = getAuth(app);
-
         const provider = new GoogleAuthProvider();
 
-
-
-        window.cart = []; // 結構將變為: [{ id, name, price, src, qty: 1 }, ...]
-
+        window.cart = [];
         window.currentProduct = {};
-
         let currentUser = null;
-
         let currentQty = 1;
 
-
-
         AOS.init({ once: true, offset: 50 });
-
-
-
         const gridContainer = document.getElementById('grid-container');
-
         
-
-        // ★★★ 商品清單 ★★★
-
+        // 商品資料
         const productList = [
-
-            { 
-
-                id: 1, 
-
-                name: "博古紐石", 
-
-                price: 500, 
-
-                desc: "經典博古紋飾，線條流暢優美，展現古樸雅緻的氣韻。",
-
-                size: "尺寸：3.5 x 3.5 x 8 cm",
-
-                images: ["https://i.postimg.cc/C59xgQF9/R80004.jpg","https://i.postimg.cc/VNXLcRTM/R80031.jpg","https://i.postimg.cc/8cNqrdZ5/R80051.jpg","https://i.postimg.cc/s2ncJYf2/R80134.jpg"] 
-
-            },
-
-            { 
-
-                id: 2, 
-
-                name: "擺件彌勒/觀音", 
-
-                price: 3000, 
-
-                desc: "法相莊嚴慈悲，雕工細膩傳神，適合居家擺設鎮宅。",
-
-                size: "尺寸：12 x 8 x 25 cm",
-
-                images: ["https://i.postimg.cc/hvD5GDGd/R80061.jpg","https://i.postimg.cc/CxSzL9GN/R80021.jpg"] 
-
-            },
-
-            { 
-
-                id: 3, 
-
-                name: "古獸紐石", 
-
-                price: 1000, 
-
-                desc: "瑞獸造型生動，寓意吉祥如意，石質溫潤細緻。",
-
-                size: "尺寸：4 x 4 x 7 cm",
-
-                images: ["https://i.postimg.cc/JnGyCJNn/R80019.jpg","https://i.postimg.cc/kX8b5xk5/R80016.jpg","https://i.postimg.cc/tCyXhWsd/R80037.jpg","https://i.postimg.cc/Bnr7Kcvw/R80078.jpg","https://i.postimg.cc/ZqzjRbfV/R80085.jpg","https://i.postimg.cc/q7pnSzDH/R80106.jpg","https://i.postimg.cc/YjcL39mM/R80118.jpg","https://i.postimg.cc/d0Q6dHYR/R80124.jpg","https://i.postimg.cc/LXcjyvrC/R80158.jpg","https://i.postimg.cc/Z5bpDWMJ/R80169.jpg","https://i.postimg.cc/jS2C7P1d/R80177.jpg","https://i.postimg.cc/26Q5Dw1c/R80187.jpg","https://i.postimg.cc/gcK0tgFt/R80203.jpg"] 
-
-            },
-
-            { 
-
-                id: 4, 
-
-                name: "素石(一顆)", 
-
-                price: 150, 
-
-                desc: "天然原石，保留最純粹的樣貌。",
-
-                size: "尺寸：隨機",
-
-                images: ["https://i.postimg.cc/fb3Zwvrx/R80045.jpg","https://i.postimg.cc/6qCnFnK2/R80167.jpg"] 
-
-            },
-
-            { 
-
-                id: 5, 
-
-                name: "素對章", 
-
-                price: 500, 
-
-                desc: "成對素章，適合篆刻練習或收藏。",
-
-                size: "尺寸：2.5 x 2.5 x 6 cm",
-
-                images: ["https://i.postimg.cc/9FJjZS3s/R80048.jpg","https://i.postimg.cc/MTWD7sJm/R80093.jpg","https://i.postimg.cc/jjTQT859/R80103.jpg"] 
-
-            },
-
-            { 
-
-                id: 6, 
-
-                name: "古獸紐石對章", 
-
-                price: 1000, 
-
-                desc: "精雕對章，送禮自用兩相宜。",
-
-                size: "尺寸：3 x 3 x 8 cm",
-
-                images: ["https://i.postimg.cc/4ycQZj6k/R80141.jpg"] 
-
-            },
-
-            { 
-
-                id: 7, 
-
-                name: "小掛印", 
-
-                price: 1000, 
-
-                desc: "小巧玲瓏，可隨身攜帶。",
-
-                size: "尺寸：1.5 x 1.5 x 4 cm",
-
-                images: ["https://i.postimg.cc/YSy6Ft8w/R80155.jpg"] 
-
-            }
-
+            { id: 1, name: "博古鈕石", price: 500, desc: "經典博古紋飾，線條流暢優美，展現古樸雅緻的氣韻。", size: "尺寸：2.1 x 2.1 x 6.9 cm", images: ["https://i.postimg.cc/C59xgQF9/R80004.jpg","https://i.postimg.cc/VNXLcRTM/R80031.jpg","https://i.postimg.cc/8cNqrdZ5/R80051.jpg","https://i.postimg.cc/s2ncJYf2/R80134.jpg"] },
+            { id: 2, name: "擺件彌勒/觀音", price: 3000, desc: "法相莊嚴慈悲，雕工細膩傳神，適合居家擺設鎮宅。", size: "尺寸：3.8 x 1.6 x 5 cm/5.3 x 3.5 x 9.2 cm", images: ["https://i.postimg.cc/hvD5GDGd/R80061.jpg","https://i.postimg.cc/CxSzL9GN/R80021.jpg"] },
+            { id: 3, name: "古獸鈕石", price: 1000, desc: "瑞獸造型生動，寓意吉祥如意，石質溫潤細緻。", size: "尺寸：2.5 x 2.5 x 7.2 cm", images: ["https://i.postimg.cc/JnGyCJNn/R80019.jpg","https://i.postimg.cc/kX8b5xk5/R80016.jpg","https://i.postimg.cc/tCyXhWsd/R80037.jpg","https://i.postimg.cc/Bnr7Kcvw/R80078.jpg","https://i.postimg.cc/ZqzjRbfV/R80085.jpg","https://i.postimg.cc/q7pnSzDH/R80106.jpg","https://i.postimg.cc/YjcL39mM/R80118.jpg","https://i.postimg.cc/d0Q6dHYR/R80124.jpg","https://i.postimg.cc/LXcjyvrC/R80158.jpg","https://i.postimg.cc/Z5bpDWMJ/R80169.jpg","https://i.postimg.cc/jS2C7P1d/R80177.jpg","https://i.postimg.cc/26Q5Dw1c/R80187.jpg","https://i.postimg.cc/gcK0tgFt/R80203.jpg"] },
+            { id: 4, name: "素石(一顆)", price: 150, desc: "天然原石，保留最純粹的樣貌。", size: "尺寸：3 x 3 x 5 cm", images: ["https://i.postimg.cc/fb3Zwvrx/R80045.jpg","https://i.postimg.cc/6qCnFnK2/R80167.jpg"] },
+            { id: 5, name: "素對章", price: 500, desc: "成對素章，適合篆刻練習或收藏。", size: "尺寸：1.8 x 1.8 x 7 cm", images: ["https://i.postimg.cc/9FJjZS3s/R80048.jpg","https://i.postimg.cc/MTWD7sJm/R80093.jpg","https://i.postimg.cc/jjTQT859/R80103.jpg"] },
+            { id: 6, name: "古獸紐石對章", price: 1000, desc: "精雕對章，送禮自用兩相宜。", size: "尺寸：2 x 2 x 7 cm", images: ["https://i.postimg.cc/4ycQZj6k/R80141.jpg"] },
+            { id: 7, name: "小掛印", price: 120, desc: "小巧玲瓏，可隨身攜帶。", size: "尺寸：1.5 x 2.5 x 3.5 cm", images: ["https://i.postimg.cc/YSy6Ft8w/R80155.jpg"] }
         ];
 
-
-
         productList.forEach((product) => {
-
             let firstImg = product.images[0];
-
             let html = `
-
                 <div class="product-card" data-aos="fade-up" onclick="openDetail(${product.id})">
-
                     <div class="product-img-wrapper"><img src="${firstImg}" class="product-img"></div>
-
                     <div class="product-info">
-
                         <div class="product-title">${product.name}</div>
-
                         <div class="product-price">NT$ ${product.price.toLocaleString()}</div>
-
                     </div>
-
                 </div>`;
-
             gridContainer.innerHTML += html;
-
         });
 
-
-
-        // 登入邏輯
-
+        // Auth
         onAuthStateChanged(auth, (user) => {
-
             if (user) {
-
                 currentUser = user;
-
                 document.getElementById('loginArea').style.display = 'none'; 
-
                 const avatar = document.getElementById('userAvatar');
-
                 avatar.src = user.photoURL; 
-
                 avatar.style.display = 'block';
-
             } else {
-
                 currentUser = null;
-
                 document.getElementById('loginArea').style.display = 'block';
-
                 document.getElementById('userAvatar').style.display = 'none';
-
             }
-
         });
-
-
 
         window.handleLogin = function() { signInWithPopup(auth, provider).then((result) => { Swal.fire('歡迎', `您好，${result.user.displayName}`, 'success'); }).catch((error) => { console.error(error); Swal.fire('錯誤', '登入失敗', 'error'); }); }
-
         window.handleLogout = function() { Swal.fire({ title: '要登出嗎？', icon: 'question', showCancelButton: true, confirmButtonText: '登出' }).then((result) => { if (result.isConfirmed) { signOut(auth).then(() => { Swal.fire('已登出', '期待下次光臨', 'success'); document.getElementById('myOrderList').innerHTML = ''; }); } }); }
 
-
-
-        // ★★★ 詳情頁核心邏輯 ★★★
-
+        // Product Detail
         window.openDetail = function(id) {
-
             const product = productList.find(p => p.id === id);
-
             if (!product) return;
-
-
-
             window.currentProduct = product;
-
             currentQty = 1;
-
-
-
             document.getElementById('detailTitle').innerText = product.name;
-
             document.getElementById('detailPrice').innerText = 'NT$ ' + product.price.toLocaleString();
-
-            
-
             document.getElementById('detailDesc').innerText = product.desc || "";
-
             document.getElementById('detailSize').innerText = product.size || "";
-
-            
-
             document.getElementById('qtyDisplay').innerText = currentQty;
-
-            
-
             const imgContainer = document.getElementById('detailImgContainer');
-
             imgContainer.innerHTML = ''; 
-
-            
-
             product.images.forEach(imgUrl => {
-
                 const img = document.createElement('img');
-
-                img.src = imgUrl;
-
-                img.className = 'detail-img'; 
-
-                imgContainer.appendChild(img);
-
+                img.src = imgUrl; img.className = 'detail-img'; imgContainer.appendChild(img);
             });
-
-
-
             document.getElementById('productDetail').classList.add('active');
-
             document.body.style.overflow = 'hidden';
-
         }
 
-
-
-        window.adjustQty = function(n) {
-
-            currentQty += n;
-
-            if (currentQty < 1) currentQty = 1;
-
-            document.getElementById('qtyDisplay').innerText = currentQty;
-
-        }
-
-
-
+        window.adjustQty = function(n) { currentQty += n; if (currentQty < 1) currentQty = 1; document.getElementById('qtyDisplay').innerText = currentQty; }
         window.closeDetail = function() { document.getElementById('productDetail').classList.remove('active'); document.body.style.overflow = 'auto'; }
 
-
-
-        // ★★★ 加入購物車 (新邏輯：合併相同商品) ★★★
-
+        // Cart Logic
         window.addToCart = function() {
-
-            // 檢查購物車內是否已有此商品
-
             let existingItem = window.cart.find(item => item.id === window.currentProduct.id);
-
-            
-
-            if (existingItem) {
-
-                // 如果有，只增加數量
-
-                existingItem.qty += currentQty;
-
-            } else {
-
-                // 如果沒有，新增一筆 (包含 id, name, price, src, qty)
-
-                window.cart.push({
-
-                    id: window.currentProduct.id,
-
-                    title: window.currentProduct.name,
-
-                    price: window.currentProduct.price,
-
-                    src: window.currentProduct.images[0],
-
-                    qty: currentQty
-
-                });
-
-            }
-
-            
-
-            // 更新總數量顯示 (計算所有 item 的 qty 總和)
-
+            if (existingItem) { existingItem.qty += currentQty; } 
+            else { window.cart.push({ id: window.currentProduct.id, title: window.currentProduct.name, price: window.currentProduct.price, src: window.currentProduct.images[0], qty: currentQty }); }
             updateCartIconCount();
-
-            
-
             Swal.fire({ icon: 'success', title: '已加入購物車', text: `${window.currentProduct.name} (共 ${window.cart.find(i=>i.id===window.currentProduct.id).qty} 件)`, timer: 1500, showConfirmButton: false });
-
             window.closeDetail();
-
         }
 
-
-
-        // 輔助函式：更新購物車圖示上的數字
-
-        function updateCartIconCount() {
-
-            let totalCount = window.cart.reduce((sum, item) => sum + item.qty, 0);
-
-            document.getElementById('cartCount').innerText = totalCount;
-
-        }
-
-
-
-        // ★★★ 購物車介面 (新邏輯：顯示數量調整器) ★★★
+        function updateCartIconCount() { let totalCount = window.cart.reduce((sum, item) => sum + item.qty, 0); document.getElementById('cartCount').innerText = totalCount; }
 
         window.renderCartItems = function() {
-
             const wrapper = document.getElementById('cartItemsWrapper'); const totalEl = document.getElementById('cartTotalPrice');
-
             if (window.cart.length === 0) { wrapper.innerHTML = '<p style="text-align: center; color: #888; margin-top: 50px;">您的購物車目前是空的。</p>'; totalEl.innerText = 'NT$ 0'; return; }
-
-            
-
-            let html = ''; 
-
-            let totalPrice = 0;
-
-            
-
+            let html = ''; let totalPrice = 0;
             window.cart.forEach((item, index) => {
-
-                let subtotal = item.price * item.qty;
-
-                totalPrice += subtotal;
-
-                
-
-                html += `
-
-                    <div class="cart-item">
-
-                        <img src="${item.src}">
-
-                        <div class="cart-item-info">
-
-                            <div class="cart-item-title">${item.title}</div>
-
-                            <div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div>
-
-                            <div class="cart-qty-control">
-
-                                <button class="cart-qty-btn" onclick="updateCartItemQty(${index}, -1)">-</button>
-
-                                <div class="cart-qty-num">${item.qty}</div>
-
-                                <button class="cart-qty-btn" onclick="updateCartItemQty(${index}, 1)">+</button>
-
-                            </div>
-
-                        </div>
-
-                        <div style="text-align:right;">
-
-                            <div style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">$${subtotal.toLocaleString()}</div>
-
-                            <button onclick="updateCartItemQty(${index}, -999)" style="background:none; border:none; cursor:pointer; color:#999;"><i class="fas fa-trash"></i></button>
-
-                        </div>
-
-                    </div>`;
-
+                let subtotal = item.price * item.qty; totalPrice += subtotal;
+                html += `<div class="cart-item"><img src="${item.src}"><div class="cart-item-info"><div class="cart-item-title">${item.title}</div><div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div><div class="cart-qty-control"><button class="cart-qty-btn" onclick="updateCartItemQty(${index}, -1)">-</button><div class="cart-qty-num">${item.qty}</div><button class="cart-qty-btn" onclick="updateCartItemQty(${index}, 1)">+</button></div></div><div style="text-align:right;"><div style="font-size:0.9rem; font-weight:bold; margin-bottom:5px;">$${subtotal.toLocaleString()}</div><button onclick="updateCartItemQty(${index}, -999)" style="background:none; border:none; cursor:pointer; color:#999;"><i class="fas fa-trash"></i></button></div></div>`;
             });
-
-            wrapper.innerHTML = html; 
-
-            totalEl.innerText = 'NT$ ' + totalPrice.toLocaleString();
-
+            wrapper.innerHTML = html; totalEl.innerText = 'NT$ ' + totalPrice.toLocaleString();
         }
-
-
-
-        // ★★★ 修改購物車內數量 ★★★
 
         window.updateCartItemQty = function(index, change) {
-
-            // 如果 change 是 -999，代表直接刪除
-
-            if (change === -999) {
-
-                window.cart.splice(index, 1);
-
-            } else {
-
-                window.cart[index].qty += change;
-
-                // 如果數量 <= 0，自動移除
-
-                if (window.cart[index].qty <= 0) {
-
-                    window.cart.splice(index, 1);
-
-                }
-
-            }
-
-            // 重新渲染畫面和更新圖示數字
-
-            window.renderCartItems();
-
-            updateCartIconCount();
-
+            if (change === -999) { window.cart.splice(index, 1); } 
+            else { window.cart[index].qty += change; if (window.cart[index].qty <= 0) { window.cart.splice(index, 1); } }
+            window.renderCartItems(); updateCartIconCount();
         }
 
-
-
         window.openCartModal = function() { document.getElementById('cartModal').classList.add('active'); document.body.style.overflow = 'hidden'; window.renderCartItems(); }
-
         window.closeCartModal = function() { document.getElementById('cartModal').classList.remove('active'); document.body.style.overflow = 'auto'; }
 
-
-
-        // 結帳邏輯 (更新：計算方式)
-
-        window.checkout = async function() {
-
+        // 結帳與表單邏輯
+        window.openCheckoutForm = function() {
             if (window.cart.length === 0) { Swal.fire('購物車是空的', '請先選購商品', 'warning'); return; }
+            if (!currentUser) { Swal.fire({ title: '請先登入', text: '登入會員後才能進行結帳', icon: 'info', confirmButtonText: '馬上登入' }).then((result) => { if(result.isConfirmed) window.handleLogin(); }); return; }
+            
+            document.getElementById('cartModal').classList.remove('active');
+            document.getElementById('checkoutFormModal').classList.add('active');
+            window.toggleBankInfo();
+        }
 
-            if (!currentUser) { Swal.fire({ title: '請先登入', text: '登入會員後才能送出訂單喔！', icon: 'info', confirmButtonText: '馬上登入' }).then((result) => { if(result.isConfirmed) window.handleLogin(); }); return; }
+        window.closeCheckoutForm = function() { document.getElementById('checkoutFormModal').classList.remove('active'); document.body.style.overflow = 'auto'; }
 
+        window.toggleBankInfo = function() {
+            const method = document.querySelector('input[name="payMethod"]:checked').value;
+            const bankInfo = document.getElementById('bankInfo');
+            if (method === 'transfer') { bankInfo.style.display = 'block'; } else { bankInfo.style.display = 'none'; }
+        }
+
+        window.submitOrder = async function() {
+            const name = document.getElementById('orderName').value.trim();
+            const phone = document.getElementById('orderPhone').value.trim();
+            const address = document.getElementById('orderAddress').value.trim();
+            const payMethod = document.querySelector('input[name="payMethod"]:checked').value;
+
+            if (!name || !phone || !address) { Swal.fire('資料不完整', '請填寫所有必填欄位 (*)', 'error'); return; }
             Swal.fire({ title: '正在傳送訂單...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
             try {
-
-                // 計算總金額 (單價 * 數量)
-
                 let total = window.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-
-                const orderData = { items: window.cart, totalPrice: total, orderTime: serverTimestamp(), status: "new", userId: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email };
-
+                const orderData = {
+                    items: window.cart, totalPrice: total, orderTime: serverTimestamp(), status: "new", paymentMethod: payMethod,
+                    contactInfo: { name: name, phone: phone, address: address },
+                    userId: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email
+                };
                 const docRef = await addDoc(collection(db, "orders"), orderData);
 
-                
+                window.cart = []; updateCartIconCount(); window.renderCartItems(); window.closeCheckoutForm();
 
-                window.cart = []; 
-
-                updateCartIconCount();
-
-                window.renderCartItems(); 
-
-                window.closeCartModal();
-
-                
-
-                Swal.fire({ icon: 'success', title: '訂單已送出！', text: `訂單編號：${docRef.id}，我們將盡快安排出貨。` });
-
-            } catch (e) { console.error("錯誤: ", e); Swal.fire('糟糕', '訂單傳送失敗', 'error'); }
-
+                if (payMethod === 'transfer') {
+                    await Swal.fire({ icon: 'success', title: '訂單已送出！', html: `訂單編號：<b>${docRef.id}</b><br><br>請匯款至：<br><b style="color:#b8962e;">(822) 107534765853</b><br><br>我們將於確認款項後盡快出貨。`, confirmButtonText: '好的' });
+                } else {
+                    await Swal.fire({ icon: 'success', title: '訂單已送出！', html: `訂單編號：<b>${docRef.id}</b><br><br>請於營業時間內至店內取貨付款。<br>期待您的光臨！`, confirmButtonText: '好的' });
+                }
+            } catch (e) { console.error("錯誤: ", e); Swal.fire('糟糕', '訂單傳送失敗，請稍後再試', 'error'); }
         }
 
-
-
-        // 訂單查詢與其他
-
+        // ★★★ 修改：訂單查詢邏輯 (加入 7 天自動取消檢查 ＋ 顯示匯款資訊) ★★★
         window.openOrderModal = async function() {
-
             if (!currentUser) { Swal.fire('請先登入', '登入後才能查看您的訂單', 'warning'); return; }
-
             document.getElementById('orderModal').classList.add('active'); document.body.style.overflow = 'hidden';
-
             const listDiv = document.getElementById('myOrderList'); document.getElementById('userInfoDisplay').innerText = `會員：${currentUser.displayName} 的訂單`;
-
             listDiv.innerHTML = '<p style="text-align:center;">正在從雲端讀取資料...</p>';
+            
+            const now = new Date(); // 取得現在時間
 
             try {
-
                 const q = query(collection(db, "orders"), where("userId", "==", currentUser.uid), orderBy("orderTime", "desc"));
-
                 const querySnapshot = await getDocs(q);
-
                 if (querySnapshot.empty) { listDiv.innerHTML = '<p style="text-align:center; color:#888; padding:30px;">您目前沒有訂單紀錄</p>'; return; }
-
+                
                 let html = '';
+                
+                // 使用 for loop 以支援 await
+                for (const docSnapshot of querySnapshot.docs) {
+                    let data = docSnapshot.data();
+                    const docId = docSnapshot.id;
 
-                querySnapshot.forEach((doc) => {
+                    // --- 自動取消邏輯 ---
+                    if (data.orderTime && data.status === 'new') {
+                        const orderDate = data.orderTime.toDate();
+                        const diffTime = now - orderDate;
+                        const diffDays = diffTime / (1000 * 60 * 60 * 24); // 算出天數
 
-                    const data = doc.data(); let statusText = '處理中', statusColor = '#e67e22', canCancel = true;
+                        if (diffDays > 7) {
+                            // 發現過期，寫入資料庫變更為 cancelled
+                            await updateDoc(doc(db, "orders", docId), { status: 'cancelled' });
+                            data.status = 'cancelled'; // 更新當前顯示的狀態
+                        }
+                    }
+                    // ------------------
 
-                    if (data.status === 'cancelled') { statusText = '已取消'; statusColor = '#c0392b'; canCancel = false; } else if (data.status === 'shipped') { statusText = '已出貨'; statusColor = '#27ae60'; canCancel = false; }
-
-                    let dateStr = data.orderTime ? data.orderTime.toDate().toLocaleString('zh-TW') : '';
-
+                    let statusText = '處理中', statusColor = '#e67e22', canCancel = true;
+                    if (data.status === 'cancelled') { statusText = '已取消 (逾期/手動)'; statusColor = '#c0392b'; canCancel = false; } 
+                    else if (data.status === 'paid') { statusText = '已付款，準備出貨'; statusColor = '#27ae60'; canCancel = false; } 
+                    else if (data.status === 'shipped') { statusText = '已出貨/可取貨'; statusColor = '#0d6efd'; canCancel = false; }
                     
-
-                    // 顯示訂單內容摘要 (顯示 qty)
-
+                    let dateStr = data.orderTime ? data.orderTime.toDate().toLocaleString('zh-TW') : '';
                     let itemsSummary = data.items.map(i => `${i.title} x${i.qty}`).join(', ');
-
                     if(itemsSummary.length > 20) itemsSummary = itemsSummary.substring(0, 20) + '...';
+                    let payMethodText = (data.paymentMethod === 'transfer') ? '銀行轉帳' : '店內付現';
 
-
+                    // 匯款資訊框 (只在「轉帳」且「未付款/新訂單」且「未取消」時顯示)
+                    let transferInfoHtml = '';
+                    if (data.paymentMethod === 'transfer' && data.status === 'new') {
+                        transferInfoHtml = `
+                            <div style="margin-top:10px; background:#fdf6e3; padding:10px; border-radius:4px; font-size:0.9rem; color:#8a6d3b;">
+                                <i class="fas fa-info-circle"></i> <b>請於 7 日內匯款：</b><br>
+                                銀行：822 (中國信託)<br>
+                                帳號：107534765853<br>
+                                戶名：石藝工作室
+                            </div>
+                        `;
+                    }
 
                     html += `<div style="border-bottom:1px solid #eee; padding-bottom:15px; margin-bottom:15px;">
-
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span style="font-weight:bold; color:#555;">${dateStr}</span><span style="color:${statusColor}; font-weight:bold;">${statusText}</span></div>
-
-                        <div style="font-size:0.9rem; color:#333; margin-bottom:10px;">
-
-                            ID: ${doc.id.slice(0,6)}... <br>
-
-                            內容: ${itemsSummary} <br>
-
-                            總金額: <b>NT$ ${data.totalPrice.toLocaleString()}</b>
-
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span style="font-weight:bold; color:#555;">${dateStr}</span>
+                            <span style="color:${statusColor}; font-weight:bold;">${statusText}</span>
                         </div>
-
-                        ${canCancel ? `<button onclick="cancelOrder('${doc.id}')" style="background:#c0392b; color:white; border:none; padding:5px 15px; border-radius:4px; cursor:pointer;">取消訂單</button>` : ''}</div>`;
-
-                });
-
+                        <div style="font-size:0.9rem; color:#333; margin-bottom:10px;">
+                            ID: ${docId.slice(0,6)}... <br>
+                            內容: ${itemsSummary} <br>
+                            方式: ${payMethodText} <br>
+                            總金額: <b>NT$ ${data.totalPrice.toLocaleString()}</b>
+                            ${transferInfoHtml}
+                        </div>
+                        ${canCancel ? `<button onclick="cancelOrder('${docId}')" style="background:#c0392b; color:white; border:none; padding:5px 15px; border-radius:4px; cursor:pointer;">取消訂單</button>` : ''}
+                    </div>`;
+                }
                 listDiv.innerHTML = html;
-
             } catch (e) { console.error(e); listDiv.innerHTML = '<p style="text-align:center;">讀取失敗 (請檢查 Console 是否需建立索引)</p>'; }
-
         }
-
+        
         window.closeOrderModal = function() { document.getElementById('orderModal').classList.remove('active'); document.body.style.overflow = 'auto'; }
-
         window.cancelOrder = async function(orderId) {
-
             const result = await Swal.fire({ title: '確定要取消嗎？', text: "取消後將無法復原", icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: '是的，取消訂單' });
-
             if (result.isConfirmed) { try { await updateDoc(doc(db, "orders", orderId), { status: "cancelled" }); Swal.fire('已取消', '您的訂單已成功取消', 'success'); window.openOrderModal(); } catch (e) { Swal.fire('失敗', '取消失敗', 'error'); } }
-
         }
-
-
 
         const images = document.querySelectorAll('.hero-img'); let currentImg = 0;
-
         setInterval(() => { images[currentImg].classList.remove('active'); currentImg = (currentImg + 1) % images.length; images[currentImg].classList.add('active'); }, 3500); 
-
         const heroSection = document.getElementById('heroSection'); const bgText = document.getElementById('bgText'); const imgContainer = document.getElementById('imgContainer');
-
         heroSection.addEventListener('mousemove', (e) => { const x = (e.clientX / window.innerWidth - 0.5) * 2; const y = (e.clientY / window.innerHeight - 0.5) * 2; bgText.style.transform = `translate(calc(-50% + ${x * 30}px), calc(-50% + ${y * 15}px))`; imgContainer.style.transform = `translate(${x * -20}px, ${y * -10}px)`; });
-
         heroSection.addEventListener('mouseleave', () => { bgText.style.transform = `translate(-50%, -50%)`; imgContainer.style.transform = `translate(0, 0)`; });
-
     </script>
-
 </body>
-
 </html>
